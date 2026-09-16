@@ -13,6 +13,7 @@ import {
   getTarget,
   isAutoPushEnabled,
   setAutoPushEnabled,
+  isHeavyFolder,
 } from "./config";
 import { ensureRepo, deleteRepo, RepoInfo } from "./github";
 import {
