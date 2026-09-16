@@ -68,6 +68,17 @@ export function sanitizeRepoName(name: string): string {
     .replace(/^-+|-+$/g, "") || "auto-pushed-project";
 }
 
+const HEAVY_FOLDER_PATTERNS = [
+  /^node_modules(\/|$)/, /^out(\/|$)/, /^dist(\/|$)/, /^build(\/|$)/,
+  /^\.git(\/|$)/, /^venv(\/|$)/, /^\.venv(\/|$)/, /^__pycache__(\/|$)/,
+  /^\.next(\/|$)/, /^target(\/|$)/, /^bin(\/|$)/, /^obj(\/|$)/,
+];
+
+export function isHeavyFolder(relPath: string): boolean {
+  const normalized = normalizePath(relPath);
+  return HEAVY_FOLDER_PATTERNS.some((re) => re.test(normalized));
+}
+
 const GITHUB_TOKEN_SECRET_KEY = "autoPush.githubToken";
 
 // GitHub token in SecretStorage
