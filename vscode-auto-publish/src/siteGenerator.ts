@@ -150,28 +150,28 @@ export function generateSite(
   const storedFiles: StoredFile[] = [];
 
   export function collectRelPaths(workspaceRoot: string, extraIgnorePatterns: string[], includedPaths: string[]): string[] {
-  const ig = loadIgnore(workspaceRoot, extraIgnorePatterns);
-  const relPaths: string[] = [];
+      const ig = loadIgnore(workspaceRoot, extraIgnorePatterns);
+      const relPaths: string[] = [];
 
-  if (!includedPaths || includedPaths.length === 0) {
-    walk(workspaceRoot, workspaceRoot, ig, relPaths);
-  } else {
-    for (const item of includedPaths) {
-      const norm = normalizePath(item);
-      if (!norm) continue;
-      const fullPath = path.join(workspaceRoot, norm);
-      if (!fs.existsSync(fullPath)) continue;
-      const stat = fs.statSync(fullPath);
-      if (stat.isDirectory()) {
-        walk(fullPath, workspaceRoot, ig, relPaths);
-      } else if (stat.isFile()) {
-        const rel = path.relative(workspaceRoot, fullPath).split(path.sep).join("/");
-        if (!ig.ignores(rel)) relPaths.push(rel);
+      if (!includedPaths || includedPaths.length === 0) {
+        walk(workspaceRoot, workspaceRoot, ig, relPaths);
+      } else {
+        for (const item of includedPaths) {
+          const norm = normalizePath(item);
+          if (!norm) continue;
+          const fullPath = path.join(workspaceRoot, norm);
+          if (!fs.existsSync(fullPath)) continue;
+          const stat = fs.statSync(fullPath);
+          if (stat.isDirectory()) {
+            walk(fullPath, workspaceRoot, ig, relPaths);
+          } else if (stat.isFile()) {
+            const rel = path.relative(workspaceRoot, fullPath).split(path.sep).join("/");
+            if (!ig.ignores(rel)) relPaths.push(rel);
+          }
+        }
       }
+      return Array.from(new Set(relPaths)).sort((a, b) => a.localeCompare(b));
     }
-  }
-  return Array.from(new Set(relPaths)).sort((a, b) => a.localeCompare(b));
-}
 
     // Copie brute pour accès direct
     const destPath = path.join(filesDir, relPath);
