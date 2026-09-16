@@ -85,15 +85,6 @@ export function activate(context: vscode.ExtensionContext) {
         refreshStatusBar();
         decorationProvider.refresh();
       }
-      context.subscriptions.push(
-        vscode.workspace.onDidChangeConfiguration((e) => {
-          if (e.affectsConfiguration("autoPush")) {
-            refreshStatusBar();
-            decorationProvider.refresh();
-            setupIntervalCheck(context);   // <-- ajoute cette ligne
-          }
-        })
-      );
     })
   );
 
