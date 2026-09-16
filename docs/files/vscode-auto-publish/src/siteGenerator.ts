@@ -42,7 +42,7 @@ export function addToAutoPushIgnore(workspaceRoot: string, relPath: string): voi
   logger.info(`Chemin ajouté à .autopushignore : ${norm}`);
 }
 
-function isLikelyBinary(filePath: string): boolean {
+export function isLikelyBinary(filePath: string): boolean {
   const fd = fs.openSync(filePath, "r");
   try {
     const buffer = Buffer.alloc(8000);
