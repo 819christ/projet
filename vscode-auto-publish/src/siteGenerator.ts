@@ -171,7 +171,7 @@ export function generateSite(
     }
   }
   return Array.from(new Set(relPaths)).sort((a, b) => a.localeCompare(b));
-} 
+}
 
     // Copie brute pour accès direct
     const destPath = path.join(filesDir, relPath);
