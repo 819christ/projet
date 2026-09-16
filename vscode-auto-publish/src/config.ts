@@ -55,6 +55,7 @@ export function getConfig(folder: vscode.WorkspaceFolder): AutoPushConfig {
     extraIgnorePatterns: cfg.get<string[]>("extraIgnorePatterns", []),
     publicSiteUrl: cfg.get<string>("publicSiteUrl", "").trim(),
     includedPaths: cfg.get<string[]>("includedPaths", []).map((p) => normalizePath(p)).filter(Boolean),
+    intervalMinutes: cfg.get<number>("intervalMinutes", 0),
   };
 }
 
