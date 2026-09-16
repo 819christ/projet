@@ -210,6 +210,12 @@
           "scope": "resource",
           "description": "URL du site GitHub Pages une fois configuré (affichée dans la barre de statut et le site généré)."
         }
+        "autoPush.intervalMinutes": {
+          "type": "number",
+          "default": 0,
+          "scope": "resource",
+          "description": "Vérifie toutes les N minutes s'il y a des changements non publiés et les publie automatiquement. 0 = désactivé."
+        }
       }
     }
   },
