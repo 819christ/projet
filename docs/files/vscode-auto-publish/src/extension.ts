@@ -501,6 +501,33 @@ async function unpublishAllCommand(context: vscode.ExtensionContext) {
   }
 }
 
+function setupIntervalCheck(context: vscode.ExtensionContext) {
+  if (intervalTimer) {
+    clearInterval(intervalTimer);
+    intervalTimer = undefined;
+  }
+  const folder = currentFolder();
+  if (!folder) return;
+  const cfg = getConfig(folder);
+  if (!cfg.enabled || !cfg.intervalMinutes || cfg.intervalMinutes <= 0) return;
+
+  intervalTimer = setInterval(async () => {
+    try {
+      const git = await ensureGitRepo(folder.uri.fsPath, cfg.branch);
+      const status = await git.status();
+      const hasChanges =
+        status.staged.length || status.created.length || status.deleted.length ||
+        status.modified.length || status.not_added.length;
+      if (hasChanges) {
+        logger.info("Vérification périodique : changements détectés, publication automatique...");
+        await publishFolder(context, folder, false);
+      }
+    } catch (err) {
+      logger.error("Vérification périodique échouée", err);
+    }
+  }, cfg.intervalMinutes * 60 * 1000);
+}
+
 // ---------- Déclenchement automatique ----------
 
 function currentFolder(): vscode.WorkspaceFolder | undefined {
