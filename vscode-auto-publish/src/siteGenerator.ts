@@ -149,21 +149,29 @@ export function generateSite(
   const uniqueRelPaths = Array.from(new Set(relPaths)).sort((a, b) => a.localeCompare(b));
   const storedFiles: StoredFile[] = [];
 
-  for (const relPath of uniqueRelPaths) {
-    const srcPath = path.join(workspaceRoot, relPath);
-    let stat: fs.Stats;
-    try {
-      stat = fs.statSync(srcPath);
-    } catch {
-      continue;
+  export function collectRelPaths(workspaceRoot: string, extraIgnorePatterns: string[], includedPaths: string[]): string[] {
+  const ig = loadIgnore(workspaceRoot, extraIgnorePatterns);
+  const relPaths: string[] = [];
+
+  if (!includedPaths || includedPaths.length === 0) {
+    walk(workspaceRoot, workspaceRoot, ig, relPaths);
+  } else {
+    for (const item of includedPaths) {
+      const norm = normalizePath(item);
+      if (!norm) continue;
+      const fullPath = path.join(workspaceRoot, norm);
+      if (!fs.existsSync(fullPath)) continue;
+      const stat = fs.statSync(fullPath);
+      if (stat.isDirectory()) {
+        walk(fullPath, workspaceRoot, ig, relPaths);
+      } else if (stat.isFile()) {
+        const rel = path.relative(workspaceRoot, fullPath).split(path.sep).join("/");
+        if (!ig.ignores(rel)) relPaths.push(rel);
+      }
     }
-    if (stat.size > MAX_FILE_BYTES) {
-      logger.warn(`Fichier ignoré (trop volumineux pour le site public): ${relPath}`);
-      continue;
-    }
-    if (isLikelyBinary(srcPath)) {
-      continue; // les binaires ne sont pas utiles pour un chatbot qui lit du code
-    }
+  }
+  return Array.from(new Set(relPaths)).sort((a, b) => a.localeCompare(b));
+} 
 
     // Copie brute pour accès direct
     const destPath = path.join(filesDir, relPath);
