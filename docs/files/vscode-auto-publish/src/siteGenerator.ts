@@ -145,10 +145,6 @@ export function generateSite(
     }
   }
 
-  // Dédupliquer et trier
-  const uniqueRelPaths = Array.from(new Set(relPaths)).sort((a, b) => a.localeCompare(b));
-  const storedFiles: StoredFile[] = [];
-
   export function collectRelPaths(workspaceRoot: string, extraIgnorePatterns: string[], includedPaths: string[]): string[] {
       const ig = loadIgnore(workspaceRoot, extraIgnorePatterns);
       const relPaths: string[] = [];
