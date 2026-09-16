@@ -108,6 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
       });
   }
+  setupIntervalCheck(context);
 
   refreshStatusBar();
   logger.info("Extension Auto Push activée avec succès.");
