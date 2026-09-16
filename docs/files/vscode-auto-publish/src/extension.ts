@@ -84,6 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (e.affectsConfiguration("autoPush")) {
         refreshStatusBar();
         decorationProvider.refresh();
+        setupIntervalCheck(context);
       }
     })
   );
