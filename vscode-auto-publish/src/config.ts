@@ -12,7 +12,7 @@ export interface AutoPushConfig {
   extraIgnorePatterns: string[];
   publicSiteUrl: string;
   includedPaths: string[];
-  intervalMinutes: cfg.get<number>("intervalMinutes", 0),
+  intervalMinutes: number;
 }
 
 export function getTarget(): vscode.ConfigurationTarget {
