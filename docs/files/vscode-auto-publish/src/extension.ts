@@ -32,6 +32,7 @@ import { logger } from "./logger";
 let statusBarItem: vscode.StatusBarItem;
 let panelStatusBarItem: vscode.StatusBarItem;
 let decorationProvider: AutoPushDecorationProvider;
+let intervalTimer: NodeJS.Timeout | undefined;
 
 const debounceTimers = new Map<string, NodeJS.Timeout>();
 const repoInfoCache = new Map<string, RepoInfo>();
