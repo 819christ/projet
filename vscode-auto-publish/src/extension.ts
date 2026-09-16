@@ -241,11 +241,30 @@ async function addToSelectionCommand(context: vscode.ExtensionContext, uri?: vsc
       return;
     }
 
+    // Bloque les dossiers lourds / générés (node_modules, out, dist, .git, etc.)
+    if (isHeavyFolder(relPath)) {
+      const proceed = await vscode.window.showWarningMessage(
+        `"${relPath}" ressemble à un dossier de dépendances ou généré (node_modules, out, build...). L'ajouter risque de faire échouer la publication (trop de fichiers) ou de la ralentir énormément.`,
+        "Ajouter quand même",
+        "Annuler"
+      );
+      if (proceed !== "Ajouter quand même") return;
+    }
+
     const cfg = getConfig(folder);
     const isAlreadyActive = cfg.enabled;
 
     if (isAlreadyActive) {
-      // 2. Projet déjà activé : ajoute le chemin et propose de publier immédiatement
+      // Avertit avant de faire basculer silencieusement "tout le projet" vers une sélection restreinte
+      if (cfg.includedPaths.length === 0) {
+        const proceed = await vscode.window.showWarningMessage(
+          `Actuellement, tout le projet est publié. Ajouter "${relPath}" va limiter la publication à ce chemin uniquement — le reste du projet ne sera plus publié tant que la sélection n'est pas vidée.`,
+          "Limiter la publication à cette sélection",
+          "Annuler"
+        );
+        if (proceed !== "Limiter la publication à cette sélection") return;
+      }
+
       const updated = await addIncludedPath(folder, relPath);
       logger.info(`Chemin ajouté à la sélection : ${relPath}`);
       refreshStatusBar();
@@ -258,7 +277,6 @@ async function addToSelectionCommand(context: vscode.ExtensionContext, uri?: vsc
         await publishActiveFolder(context, true);
       }
     } else {
-      // 3. Projet pas encore activé : activation scopée
       const choice = await vscode.window.showInformationMessage(
         `Auto Push n'est pas encore activé sur ce projet. Activer maintenant et publier uniquement "${relPath}" ?`,
         "Activer et publier ce chemin",
